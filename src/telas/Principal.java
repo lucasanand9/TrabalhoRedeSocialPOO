@@ -132,7 +132,7 @@ public class Principal extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!rede.addAmigo(AddAmigo.getText())) {
-					JOptionPane.showMessageDialog(null, "Conta nao encontrada");
+					JOptionPane.showMessageDialog(null, "Conta nao encontrada ou ja tem esse usuario adicionado");
 				}else {
 					JOptionPane.showMessageDialog(null, "Amigo adicionado");
 					Principal principal = new Principal(rede);

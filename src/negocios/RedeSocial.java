@@ -10,7 +10,6 @@ import dados.Usuario;
 public class RedeSocial {
 	private List<Usuario> usuarioRedeSocial = new ArrayList<Usuario>();
 	private Usuario logadoAtual = null;
-	private static RedeSocial sys = null;
 	
 	
 	public String getNomeLogado() {
@@ -21,13 +20,7 @@ public class RedeSocial {
 		return this.logadoAtual.getBiografia();
 	}
 	
-	//depois ver oq ela faz
-	 public static RedeSocial getInstance(){
-	        if(sys == null)
-	            sys = new RedeSocial();
-	        return sys;
-	    }
-	
+
 	//Realiza o login de um usurio, verificando o username e senha, depois da verificação troca a variavel de logadoAtual para o usuario q tem os dados correspondentes
 	public boolean login(String nome, String senha) {
 		for(Usuario u : usuarioRedeSocial) {
@@ -90,7 +83,12 @@ public class RedeSocial {
 			return false;
 		}
 		for(Usuario u : usuarioRedeSocial) {
-			if(u.getUsername().equals(nome)) {
+			if(u.getUsername().equals(nome) && !nome.equals(this.logadoAtual.getUsername())) {
+				for(Usuario p : logadoAtual.getAmigos()) {
+					if(p.getUsername().equals(nome)) {
+						return false;
+					}
+				}
 				logadoAtual.addAmigo(u);
 				return true;
 			}
