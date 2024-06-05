@@ -5,9 +5,13 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import negocios.RedeSocial;
+
 import javax.swing.JTabbedPane;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JSeparator;
 import javax.swing.JPasswordField;
@@ -17,6 +21,8 @@ import java.awt.Font;
 import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Login extends JFrame {
 
@@ -24,27 +30,10 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JTextField Username;
 	private JPasswordField Senha;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login frame = new Login();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	/**
 	 * Create the frame.
 	 */
-	public Login() {
+	public Login(RedeSocial rede) {
 		setTitle("Login");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -90,11 +79,30 @@ public class Login extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		JButton btnLogin = new JButton("LOGIN");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rede.login(Username.getText(), new String(Senha.getPassword()))) {
+					Principal princ = new Principal(rede);
+					princ.setVisible(true);
+					dispose();
+				}else {
+					JOptionPane.showMessageDialog(null, "Conta nao encontrada");
+				}
+				
+			}
+		});
 		btnLogin.setFont(new Font("Dialog", Font.BOLD, 20));
 		btnLogin.setBounds(154, 351, 485, 50);
 		contentPane.add(btnLogin);
 		
 		JButton CadastrarSwitch = new JButton("Cadastrar");
+		CadastrarSwitch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Cadastro cad = new Cadastro(rede);
+                cad.setVisible(true);
+                dispose();
+			}
+		});
 		CadastrarSwitch.setBorder(null);
 		CadastrarSwitch.setBounds(406, 533, 117, 25);
 		contentPane.add(CadastrarSwitch);

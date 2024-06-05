@@ -1,18 +1,21 @@
 package dados;
 
+import java.awt.Image;
+
 public class Postagem {
 	private long id;
-	private String foto;
+	private Image foto;
+	
 	public long getId() {
 		return id;
 	}
-	public String getFoto() {
+	public Image getFoto() {
 		return foto;
 	}
 	public void setId(long id) {
 		this.id = id;
 	}
-	public void setFoto(String foto) {
+	public void setFoto(Image foto) {
 		this.foto = foto;
 	}
 	@Override

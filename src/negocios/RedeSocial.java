@@ -1,5 +1,6 @@
 package negocios;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +10,35 @@ import dados.Usuario;
 public class RedeSocial {
 	private List<Usuario> usuarioRedeSocial = new ArrayList<Usuario>();
 	private Usuario logadoAtual = null;
+	private static RedeSocial sys = null;
+	
+	
+	public String getNomeLogado() {
+		return this.logadoAtual.getUsername();
+	}
+	
+	public String getBioLogado() {
+		return this.logadoAtual.getBiografia();
+	}
+	
+	//depois ver oq ela faz
+	 public static RedeSocial getInstance(){
+	        if(sys == null)
+	            sys = new RedeSocial();
+	        return sys;
+	    }
 	
 	//Realiza o login de um usurio, verificando o username e senha, depois da verificação troca a variavel de logadoAtual para o usuario q tem os dados correspondentes
-	public void login(String nome, String senha) {
+	public boolean login(String nome, String senha) {
 		for(Usuario u : usuarioRedeSocial) {
 			//verifica se tem alg usuario q tem o mesmo nome e a senha que o usuario passou
 			if(u.getUsername().equals(nome) && u.getPassword().equals(senha)) {
 				logadoAtual = u;
 				System.out.println("Sr." + u.getUsername() + " está logado");
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	//Trasnforma o logadoAtual para nulo
@@ -99,7 +118,7 @@ public class RedeSocial {
 	}
 	
 	//Cria uma nova postagem
-	public Postagem criaPostagem(String foto, long id) {
+	public Postagem criaPostagem(Image foto, long id) {
 		Postagem post = new Postagem();
 		post.setFoto(foto);
 		post.setId(id);
@@ -180,7 +199,9 @@ public class RedeSocial {
 		return true;
 	}
 	
-	
+	public List<Usuario> getUsuariosTotais() {
+		return this.usuarioRedeSocial;
+	}
 	
 	
 	

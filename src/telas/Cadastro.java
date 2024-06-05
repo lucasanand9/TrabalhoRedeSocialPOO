@@ -5,13 +5,19 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import negocios.RedeSocial;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Cadastro extends JFrame {
 
@@ -22,25 +28,9 @@ public class Cadastro extends JFrame {
 	private JTextField Username;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Cadastro frame = new Cadastro();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public Cadastro() {
+	public Cadastro(RedeSocial rede) {
 		setTitle("Cadastro");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,11 +76,30 @@ public class Cadastro extends JFrame {
 		contentPane.add(lblRegistrar);
 		
 		JButton btnCadastro = new JButton("CADASTRAR");
+		btnCadastro.addActionListener(new ActionListener() {
+			long id = 0;
+			public void actionPerformed(ActionEvent e) {
+				if(rede.cadastra(id, Username.getText(), new String(Senha.getPassword()), NomeCompleto.getText())) {
+					Login log = new Login(rede);
+	                log.setVisible(true);
+	                dispose();
+				}else {
+					JOptionPane.showMessageDialog(null, "Ja existe uma conta com esse Username");
+				}
+			}
+		});
 		btnCadastro.setFont(new Font("Dialog", Font.BOLD, 20));
 		btnCadastro.setBounds(156, 420, 485, 50);
 		contentPane.add(btnCadastro);
 		
 		JButton LogarSwitch = new JButton("Logar");
+		LogarSwitch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Login log = new Login(rede);
+                log.setVisible(true);
+                dispose();
+			}
+		});
 		LogarSwitch.setBounds(388, 533, 117, 25);
 		contentPane.add(LogarSwitch);
 		

@@ -7,6 +7,9 @@ import java.awt.Font;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+
+import negocios.RedeSocial;
+
 import javax.swing.SpringLayout;
 import javax.swing.JTextField;
 
@@ -18,7 +21,7 @@ public class Usuarios extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public Usuarios() {
+	public Usuarios(RedeSocial rede) {
 		setBackground(new Color(192, 191, 188));
 		SpringLayout springLayout = new SpringLayout();
 		setLayout(springLayout);
