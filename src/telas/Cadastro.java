@@ -100,12 +100,12 @@ public class Cadastro extends JFrame {
                 dispose();
 			}
 		});
-		LogarSwitch.setBounds(388, 533, 117, 25);
+		LogarSwitch.setBounds(406, 518, 117, 25);
 		contentPane.add(LogarSwitch);
 		
 		JLabel lblNewLabel_1 = new JLabel("Ja tem conta?");
 		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 15));
-		lblNewLabel_1.setBounds(257, 538, 126, 15);
+		lblNewLabel_1.setBounds(276, 523, 150, 15);
 		contentPane.add(lblNewLabel_1);
 		
 		Username = new JTextField();

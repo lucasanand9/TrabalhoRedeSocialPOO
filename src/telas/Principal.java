@@ -6,14 +6,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import dados.Postagem;
 import dados.Usuario;
 import negocios.RedeSocial;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.SwingConstants;
 import javax.swing.JSlider;
 import javax.swing.JScrollBar;
@@ -21,12 +25,15 @@ import javax.swing.JScrollPane;
 import telas.Usuarios;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractListModel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -43,6 +50,11 @@ public class Principal extends JFrame {
 	private JTable table;
 	private JTextField txtAlterarBio;
 
+	
+	private Image img = null;
+	private JFileChooser imageGetter = new JFileChooser();
+	private Long id_img = (long) 0;
+	
 	public Principal(RedeSocial rede) {
 		setTitle("Rede Social");
 		setResizable(false);
@@ -141,42 +153,72 @@ public class Principal extends JFrame {
 		tabbedPane.addTab("Perfil", null, Perfil, null);
 		Perfil.setLayout(null);
 		
+		
 		JButton btnAddPostagem = new JButton("Adicionar Postagem");
-		btnAddPostagem.setBounds(252, 321, 319, 33);
+		btnAddPostagem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int state = imageGetter.showOpenDialog(btnAddPostagem);
+				 if(state!= JFileChooser.APPROVE_OPTION)
+	                    return;
+				 try {
+					 File f = imageGetter.getSelectedFile();
+	                 img = ImageIO.read(f);
+				 }catch(IOException exception){
+					 System.out.println("erro");
+				 }
+				 
+				 if(img==null){
+					 JOptionPane.showMessageDialog(null, "Escolha uma imagem");
+	                    return;
+	             }
+				 Postagem post = rede.criaPostagem(img, id_img);
+				 rede.fazPostagem(post);
+				 img = null;
+				 id_img++;
+				 
+				 System.out.println(rede.mostrarMinhasPostagens());
+				 
+				 Principal principal = new Principal(rede);
+				 principal.setVisible(true);
+				 dispose();
+				 
+			}
+		});
+		btnAddPostagem.setBounds(253, 296, 319, 33);
 		Perfil.add(btnAddPostagem);
 		
 		txtAlterarNomeCompleto = new JTextField();
-		txtAlterarNomeCompleto.setBounds(197, 68, 422, 33);
+		txtAlterarNomeCompleto.setBounds(200, 46, 422, 33);
 		Perfil.add(txtAlterarNomeCompleto);
 		txtAlterarNomeCompleto.setColumns(10);
 		
 		txtAlterarUsername = new JTextField();
 		txtAlterarUsername.setColumns(10);
-		txtAlterarUsername.setBounds(197, 138, 422, 33);
+		txtAlterarUsername.setBounds(200, 116, 422, 33);
 		Perfil.add(txtAlterarUsername);
 		
 		txtAlterarSenha = new JTextField();
 		txtAlterarSenha.setToolTipText("dasd");
 		txtAlterarSenha.setColumns(10);
-		txtAlterarSenha.setBounds(197, 215, 422, 33);
+		txtAlterarSenha.setBounds(200, 176, 422, 33);
 		Perfil.add(txtAlterarSenha);
 		
 		JLabel lblNomeCompleto = new JLabel("Nome Completo");
 		lblNomeCompleto.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblNomeCompleto.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblNomeCompleto.setBounds(-25, 76, 182, 15);
+		lblNomeCompleto.setBounds(-22, 54, 182, 15);
 		Perfil.add(lblNomeCompleto);
 		
 		JLabel lblUserName = new JLabel("Username");
 		lblUserName.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblUserName.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblUserName.setBounds(-25, 146, 182, 15);
+		lblUserName.setBounds(-22, 124, 182, 15);
 		Perfil.add(lblUserName);
 		
 		JLabel lblSenha = new JLabel("Senha");
 		lblSenha.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblSenha.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblSenha.setBounds(-25, 223, 182, 15);
+		lblSenha.setBounds(-22, 184, 182, 15);
 		Perfil.add(lblSenha);
 		
 		JButton btnConfirmName = new JButton("✓");
@@ -190,7 +232,7 @@ public class Principal extends JFrame {
 				
 			}
 		});
-		btnConfirmName.setBounds(658, 68, 44, 33);
+		btnConfirmName.setBounds(661, 46, 44, 33);
 		Perfil.add(btnConfirmName);
 		
 		JButton btnConfirmUserName = new JButton("✓");
@@ -210,7 +252,7 @@ public class Principal extends JFrame {
 				
 			}
 		});
-		btnConfirmUserName.setBounds(658, 138, 44, 33);
+		btnConfirmUserName.setBounds(661, 116, 44, 33);
 		Perfil.add(btnConfirmUserName);
 		
 		JButton btnConfirmSenha = new JButton("✓");
@@ -226,13 +268,13 @@ public class Principal extends JFrame {
 	            }
 			}
 		});
-		btnConfirmSenha.setBounds(658, 215, 44, 33);
+		btnConfirmSenha.setBounds(661, 176, 44, 33);
 		Perfil.add(btnConfirmSenha);
 		
 		JLabel lblNomeCompletoPage = new JLabel("<html> <h1>" + rede.getNomeLogado() + "</h1> </html>");
 		lblNomeCompletoPage.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNomeCompletoPage.setFont(new Font("Dialog", Font.BOLD, 30));
-		lblNomeCompletoPage.setBounds(264, 12, 273, 33);
+		lblNomeCompletoPage.setBounds(265, 1, 273, 33);
 		Perfil.add(lblNomeCompletoPage);
 		
 		JButton btnNewButton = new JButton("Logout");
@@ -244,11 +286,11 @@ public class Principal extends JFrame {
                 dispose();
 			}
 		});
-		btnNewButton.setBounds(633, 521, 150, 40);
+		btnNewButton.setBounds(699, 491, 84, 40);
 		Perfil.add(btnNewButton);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(26, 411, 757, 98);
+		scrollPane_2.setBounds(26, 389, 757, 98);
 		Perfil.add(scrollPane_2);
 		
 		JList list_1 = new JList();
@@ -260,21 +302,21 @@ public class Principal extends JFrame {
 				return rede.verSeguidores().get(index).getUsername();
 			}
 		});
-		scrollPane_2.setViewportView(list_1);
+		scrollPane_2.setColumnHeaderView(list_1);
 		
 		JLabel lblBio = new JLabel(rede.getBioLogado());
 		lblBio.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBio.setBounds(197, 366, 422, 33);
+		lblBio.setBounds(200, 341, 422, 33);
 		Perfil.add(lblBio);
 		
 		JLabel lblBiografia = new JLabel("Biografia");
 		lblBiografia.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblBiografia.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblBiografia.setBounds(12, 289, 145, 15);
+		lblBiografia.setBounds(15, 250, 145, 15);
 		Perfil.add(lblBiografia);
 		
 		txtAlterarBio = new JTextField();
-		txtAlterarBio.setBounds(197, 280, 422, 33);
+		txtAlterarBio.setBounds(200, 241, 422, 33);
 		Perfil.add(txtAlterarBio);
 		txtAlterarBio.setColumns(10);
 		
@@ -287,7 +329,7 @@ public class Principal extends JFrame {
 	            dispose();
 			}
 		});
-		btnConfirmSenha_1.setBounds(658, 280, 44, 33);
+		btnConfirmSenha_1.setBounds(661, 241, 44, 33);
 		Perfil.add(btnConfirmSenha_1);
 		
 		JButton btnNewButton_2 = new JButton("Remover");
@@ -302,7 +344,7 @@ public class Principal extends JFrame {
 				}
 			}
 		});
-		btnNewButton_2.setBounds(26, 529, 117, 25);
+		btnNewButton_2.setBounds(36, 499, 117, 25);
 		Perfil.add(btnNewButton_2);
 	}
 }

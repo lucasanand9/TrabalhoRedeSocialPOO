@@ -104,12 +104,12 @@ public class Login extends JFrame {
 			}
 		});
 		CadastrarSwitch.setBorder(null);
-		CadastrarSwitch.setBounds(406, 533, 117, 25);
+		CadastrarSwitch.setBounds(406, 518, 117, 25);
 		contentPane.add(CadastrarSwitch);
 		
 		JLabel lblNewLabel_1 = new JLabel("Criar conta");
 		lblNewLabel_1.setFont(new Font("Dialog", Font.BOLD, 15));
-		lblNewLabel_1.setBounds(304, 538, 92, 15);
+		lblNewLabel_1.setBounds(304, 523, 92, 15);
 		contentPane.add(lblNewLabel_1);
 	}
 }

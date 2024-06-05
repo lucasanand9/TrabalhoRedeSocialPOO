@@ -9,7 +9,7 @@ import dados.Postagem;
 import negocios.RedeSocial;
 
 public class ImgTable extends AbstractTableModel {
-	private final String[] colunas = {"Postagems"};
+	private final String[] colunas = {"Postagens"};
 	private List<Postagem> posts;
 	
 	public ImgTable(RedeSocial a){
