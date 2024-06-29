@@ -5,6 +5,7 @@ import java.awt.Image;
 public class Postagem {
 	private long id;
 	private Image foto;
+	private String legenda;
 	
 	public long getId() {
 		return id;
@@ -20,7 +21,13 @@ public class Postagem {
 	}
 	@Override
 	public String toString() {
-		return "id = " + id + " [foto = " + foto + "]";
+		return "id = " + id + " [foto = " + foto + ", " + legenda + "]";
+	}
+	public String getLegenda() {
+		return legenda;
+	}
+	public void setLegenda(String legenda) {
+		this.legenda = legenda;
 	}
 	
 	

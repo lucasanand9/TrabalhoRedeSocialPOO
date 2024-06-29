@@ -9,7 +9,7 @@ import dados.Postagem;
 import negocios.RedeSocial;
 
 public class ImgTable extends AbstractTableModel {
-	private final String[] colunas = {"Postagens"};
+private final String[] colunas = {"Postagens", "Legenda"};
 	private List<Postagem> posts;
 	
 	public ImgTable(RedeSocial a){
@@ -17,7 +17,7 @@ public class ImgTable extends AbstractTableModel {
     }
 	
 	public int getColumnCount(){
-        return 1;
+        return 2;
     }
 	
 	public String getColumnName(int column){
@@ -33,9 +33,13 @@ public class ImgTable extends AbstractTableModel {
         return getValueAt(0, c).getClass();
     }
 
-
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return new ImageIcon(posts.get(rowIndex).getFoto());
+		if(columnIndex == 0) {
+			return new ImageIcon(posts.get(rowIndex).getFoto());
+		}else {
+			return posts.get(rowIndex).getLegenda();
+		}
+		
 	}
 }

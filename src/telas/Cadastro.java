@@ -27,9 +27,7 @@ public class Cadastro extends JFrame {
 	private JPasswordField Senha;
 	private JTextField Username;
 
-	/**
-	 * Create the frame.
-	 */
+
 	public Cadastro(RedeSocial rede) {
 		setTitle("Cadastro");
 		setResizable(false);

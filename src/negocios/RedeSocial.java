@@ -19,6 +19,9 @@ public class RedeSocial {
 	public String getBioLogado() {
 		return this.logadoAtual.getBiografia();
 	}
+	public Usuario getLogado() {
+		return logadoAtual;
+	}
 	
 
 	//Realiza o login de um usurio, verificando o username e senha, depois da verificação troca a variavel de logadoAtual para o usuario q tem os dados correspondentes
@@ -78,6 +81,7 @@ public class RedeSocial {
 	
 	//Adiciona um novo usuario na lista de amigos do logadoAtual
 	public boolean addAmigo(String nome) {
+		System.out.println(nome);
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
@@ -116,10 +120,10 @@ public class RedeSocial {
 	}
 	
 	//Cria uma nova postagem
-	public Postagem criaPostagem(Image foto, long id) {
+	public Postagem criaPostagem(Image foto, String legenda ){
 		Postagem post = new Postagem();
 		post.setFoto(foto);
-		post.setId(id);
+		post.setLegenda(legenda);
 		return post;
 	}
 	
