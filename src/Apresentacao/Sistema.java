@@ -15,7 +15,7 @@ public class Sistema {
 	
 	public static void main(String[] args) {
 		try {
-		redeSocial = new RedeSocial("lucas");
+		redeSocial = new RedeSocial("udesc");
 
 		Login  log = new Login(redeSocial);
 		log.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

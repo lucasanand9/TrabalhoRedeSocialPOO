@@ -1,20 +1,26 @@
 package telas;
-
+	
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
 import dados.Postagem;
+import exception.SelectException;
 import negocios.RedeSocial;
-
+	
 public class ImgTable extends AbstractTableModel {
 	
 private final String[] colunas = {"Postagens", "Legenda"};
 	private List<Postagem> posts;
 	
 	public ImgTable(RedeSocial a){
-        posts = a.mostrarPostagem();
+        try {
+			posts = a.mostrarPostagem();
+		} catch (SelectException | IOException e) {
+			e.printStackTrace();
+		}
     }
 	
 	public int getColumnCount(){

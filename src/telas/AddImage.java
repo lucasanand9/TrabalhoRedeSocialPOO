@@ -7,7 +7,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import dados.Postagem;
+import exception.InsertException;
+import exception.SelectException;
 import negocios.RedeSocial;
+import percistencia.PostagemDAO;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +25,7 @@ import javax.swing.JFileChooser;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 
@@ -32,9 +36,12 @@ public class AddImage extends JFrame {
 	private JPanel contentPane;
 	private JFileChooser imageGetter = new JFileChooser();
 	private Image img = null;
+	private File f;
 	private JTextField Legenda;
+	
 
 	public AddImage(RedeSocial rede) {
+		
 		
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -58,7 +65,8 @@ public class AddImage extends JFrame {
 				 if(state!= JFileChooser.APPROVE_OPTION)
 	                    return;
 				 try {
-					 File f = imageGetter.getSelectedFile();
+					 f = imageGetter.getSelectedFile();
+					 
 	                 img = ImageIO.read(f);
 				 }catch(IOException exception){
 					 System.out.println("erro");
@@ -80,13 +88,23 @@ public class AddImage extends JFrame {
 				if((img == null) || (Legenda.getText().equals(""))) {
 					JOptionPane.showMessageDialog(null, "Algo deu errado, adicione novamente uma imagem e uma legenda");
 				}else {
-				 Postagem post = rede.criaPostagem(img, Legenda.getText());
-				 rede.fazPostagem(post);
+				 Postagem post = rede.criaPostagem(img, Legenda.getText(), f);
+				 try {
+					rede.fazPostagem(post);
+				} catch (InsertException e1) {
+					e1.printStackTrace();
+				}
 				 img = null;
-				 System.out.println(rede.mostrarMinhasPostagens());
+				 f = null;
+				 try {
+					System.out.println(rede.mostrarMinhasPostagens());
+				} catch (SelectException | IOException e1) {
+					e1.printStackTrace();
+				}
 				 dispose();
 			}
 			 img = null;
+			 f = null;
 		  }
 		});
 		Postar.setBounds(163, 228, 117, 25);

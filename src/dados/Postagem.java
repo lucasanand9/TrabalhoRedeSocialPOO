@@ -1,12 +1,14 @@
 package dados;
 
 import java.awt.Image;
+import java.io.File;
 
 public class Postagem {
 	private long id;
 	private long idUsuario;
 	private Image foto;
 	private String legenda;
+	private File file;
 	
 	public long getId() {
 		return id;
@@ -32,10 +34,17 @@ public class Postagem {
 	public void setIdUsuario(long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
+	public File getFile() {
+		return file;
+	}
+	public void setFile(File file) {
+		this.file = file;
+	}
 	@Override
 	public String toString() {
 		return "id = " + id + " [foto = " + foto + ", " + legenda + "]";
 	}
+	
 
 	
 	

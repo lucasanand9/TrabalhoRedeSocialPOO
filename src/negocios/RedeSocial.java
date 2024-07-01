@@ -1,6 +1,8 @@
 package negocios;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +14,21 @@ import exception.InsertException;
 import exception.SelectException;
 import exception.UpdateException;
 import percistencia.Conexao;
+import percistencia.PostagemDAO;
 import percistencia.UsuarioDAO;
 
 public class RedeSocial {
 //	private List<Usuario> usuarioRedeSocial = new ArrayList<Usuario>();
 	private UsuarioDAO usuarioDAO;
 	private Usuario logadoAtual = null;
+	private PostagemDAO postagemDAO;
+	
+	
 	
 	public RedeSocial(String senha) throws ClassNotFoundException, SQLException, SelectException {
-		Conexao.setSenha("lucas");
+		Conexao.setSenha("udesc");
 		usuarioDAO = UsuarioDAO.getInstance();
+		postagemDAO = PostagemDAO.getInstacen();
 	}
 	
 	public String getNomeLogado() {
@@ -61,24 +68,24 @@ public class RedeSocial {
 	}
 	
 	//Mostra todas as postagens dos usuarios que o logadoAtual segue
-	public List<Postagem> mostrarPostagem(){
+	public List<Postagem> mostrarPostagem() throws SelectException, IOException{
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return null;
 		}
 		List<Postagem> postagens = new ArrayList<Postagem>();
 		for(Usuario u : logadoAtual.getAmigos()) {
-			postagens.addAll(u.getPostagens());
+			postagens.addAll(postagemDAO.selectPostagens(u.getId()));
 		}
 		return postagens;
 	}
 	
-	public List<Postagem> mostrarMinhasPostagens(){
+	public List<Postagem> mostrarMinhasPostagens() throws SelectException, IOException{
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return null;
 		}
-		return logadoAtual.getPostagens();
+		return postagemDAO.selectPostagens(logadoAtual.getId());
 	}
 	
 	//Adiciona um novo usuario na lista de amigos do logadoAtual
@@ -112,20 +119,22 @@ public class RedeSocial {
 	}
 	
 	//Adiciona uma Postagem na lista de postagem do logadoAtual
-	public boolean fazPostagem(Postagem post) {
+	public boolean fazPostagem(Postagem post) throws InsertException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
 		logadoAtual.realizarPostagem(post);
+		postagemDAO.insertPostagem(logadoAtual, post);
 		return true;
 	}
 	
 	//Cria uma nova postagem
-	public Postagem criaPostagem(Image foto, String legenda ){
+	public Postagem criaPostagem(Image foto, String legenda, File file ){
 		Postagem post = new Postagem();
 		post.setFoto(foto);
 		post.setLegenda(legenda);
+		post.setFile(file);
 		return post;
 	}
 	

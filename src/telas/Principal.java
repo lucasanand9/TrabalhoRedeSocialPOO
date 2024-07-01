@@ -140,7 +140,7 @@ public class Principal extends JFrame {
 						table = new JTable(new ImgTable(rede));
 						table.setRowHeight(120);
 						scrollPane_1.setViewportView(table);
-						scrollPane_2.setColumnHeaderView(listaAmigos);
+						scrollPane_2.setViewportView(listaAmigos);
 					}
 				} catch (HeadlessException | InsertException | SelectException e1) {
 					e1.printStackTrace();
