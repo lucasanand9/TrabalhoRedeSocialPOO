@@ -6,12 +6,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import exception.InsertException;
 import negocios.RedeSocial;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import java.awt.Font;
+import java.awt.HeadlessException;
+
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -29,9 +32,10 @@ public class Cadastro extends JFrame {
 
 
 	public Cadastro(RedeSocial rede) {
+		
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Cadastro");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -77,12 +81,16 @@ public class Cadastro extends JFrame {
 		btnCadastro.addActionListener(new ActionListener() {
 			long id = 0;
 			public void actionPerformed(ActionEvent e) {
-				if(rede.cadastra(id, Username.getText(), new String(Senha.getPassword()), NomeCompleto.getText())) {
-					Login log = new Login(rede);
-	                log.setVisible(true);
-	                dispose();
-				}else {
-					JOptionPane.showMessageDialog(null, "Ja existe uma conta com esse Username");
+				try {
+					if(rede.cadastra(Username.getText(), new String(Senha.getPassword()), NomeCompleto.getText())) {
+						Login log = new Login(rede);
+					    log.setVisible(true);
+					    dispose();
+					}else {
+						JOptionPane.showMessageDialog(null, "Ja existe uma conta com esse Username");
+					}
+				} catch (HeadlessException | InsertException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});

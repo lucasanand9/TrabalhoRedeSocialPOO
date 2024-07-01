@@ -1,16 +1,28 @@
 package negocios;
 
 import java.awt.Image;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import dados.Postagem;
 import dados.Usuario;
+import exception.DeleteException;
+import exception.InsertException;
+import exception.SelectException;
+import exception.UpdateException;
+import percistencia.Conexao;
+import percistencia.UsuarioDAO;
 
 public class RedeSocial {
-	private List<Usuario> usuarioRedeSocial = new ArrayList<Usuario>();
+//	private List<Usuario> usuarioRedeSocial = new ArrayList<Usuario>();
+	private UsuarioDAO usuarioDAO;
 	private Usuario logadoAtual = null;
 	
+	public RedeSocial(String senha) throws ClassNotFoundException, SQLException, SelectException {
+		Conexao.setSenha("lucas");
+		usuarioDAO = UsuarioDAO.getInstance();
+	}
 	
 	public String getNomeLogado() {
 		return this.logadoAtual.getUsername();
@@ -25,37 +37,27 @@ public class RedeSocial {
 	
 
 	//Realiza o login de um usurio, verificando o username e senha, depois da verificação troca a variavel de logadoAtual para o usuario q tem os dados correspondentes
-	public boolean login(String nome, String senha) {
-		for(Usuario u : usuarioRedeSocial) {
-			//verifica se tem alg usuario q tem o mesmo nome e a senha que o usuario passou
-			if(u.getUsername().equals(nome) && u.getPassword().equals(senha)) {
-				logadoAtual = u;
-				System.out.println("Sr." + u.getUsername() + " está logado");
-				return true;
-			}
+	public boolean login(String nome, String senha) throws SelectException {
+		logadoAtual = usuarioDAO.login(nome, senha);
+		if(logadoAtual == null){
+			return false;
+		}else {
+			return true;
 		}
-		return false;
 	}
-	
+
 	//Trasnforma o logadoAtual para nulo
 	public void logout() {
 		logadoAtual = null;
 	}
 	
 	//Cria um novo usuario e adiciona na lista de usuarios
-	public boolean cadastra(long id , String nome, String password, String nomeCompleto) {
-		for(Usuario u:usuarioRedeSocial) {
-			if(u.getUsername().equals(nome)) {
-				return false;
-			}
-		}
-		Usuario temp = new Usuario();
-		temp.setId(id);
-		temp.setPassword(password);
-		temp.setUsername(nome);
-		temp.setNomeCompleto(nomeCompleto);
-		usuarioRedeSocial.add(temp);
-		return true;
+	public boolean cadastra(String nome, String password, String nomeCompleto) throws InsertException {
+		Usuario u = new Usuario();
+		u.setNomeCompleto(nomeCompleto);
+		u.setUsername(nome);
+		u.setPassword(password);
+		return usuarioDAO.insertUsuario(u);
 	}
 	
 	//Mostra todas as postagens dos usuarios que o logadoAtual segue
@@ -80,33 +82,33 @@ public class RedeSocial {
 	}
 	
 	//Adiciona um novo usuario na lista de amigos do logadoAtual
-	public boolean addAmigo(String nome) {
-		System.out.println(nome);
+	public boolean addAmigo(String nome) throws InsertException, SelectException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
-		for(Usuario u : usuarioRedeSocial) {
-			if(u.getUsername().equals(nome) && !nome.equals(this.logadoAtual.getUsername())) {
-				for(Usuario p : logadoAtual.getAmigos()) {
-					if(p.getUsername().equals(nome)) {
-						return false;
-					}
+		if(!logadoAtual.getUsername().equals(nome)) {
+			for(Usuario u : logadoAtual.getAmigos()) {
+				if(u.getId() == usuarioDAO.selectByUsername(nome).getId()) {
+					return false;
 				}
-				logadoAtual.addAmigo(u);
-				return true;
 			}
+			logadoAtual.addAmigo(usuarioDAO.selectByUsername(nome)); 
+			System.out.println(logadoAtual.getAmigos());
+			return usuarioDAO.adicionaAmigo(logadoAtual, nome);
+			
 		}
 		return false;
 	}
 	
 	//Remove um usuario da lista de amigos do logadoAtual
-	public boolean removeAmigo(String nome) {
+	public boolean removeAmigo(String nome) throws DeleteException, SelectException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
-		return logadoAtual.removeAmigo(nome);
+		logadoAtual.removeAmigo(nome);
+		return usuarioDAO.removeAmigo(logadoAtual, nome);
 	}
 	
 	//Adiciona uma Postagem na lista de postagem do logadoAtual
@@ -128,14 +130,8 @@ public class RedeSocial {
 	}
 	
 	//Procura um usuario na lista de usuarios da rede social
-	public Usuario procuraPessoa(String nome) {
-		for(Usuario u : usuarioRedeSocial) {
-			if(u.getUsername().equals(nome)) {
-				return u;
-			}
-		}
-		System.err.println("Não exite esse Usuario");
-		return null;
+	public Usuario procuraPessoa(String nome) throws SelectException {
+		return usuarioDAO.selectByUsername(nome);
 	}
 	
 	//Retorna uma lista com os amigos do logadoAtual
@@ -145,6 +141,7 @@ public class RedeSocial {
 			return null;
 		}
 		return logadoAtual.getAmigos();	
+		//ver depois
 	}
 	
 	public void vePerfil() {
@@ -159,50 +156,58 @@ public class RedeSocial {
 	}
 	
 	//Edita as informaçoes do logadoAtual
-	public boolean editarSenha(String senha) {
+	public boolean editarSenha(String senha) throws UpdateException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
+		usuarioDAO.updateSenha(logadoAtual, senha);
 		logadoAtual.setPassword(senha);
 		return true;
 	}
 	
-	public boolean editarUserName(String nome) {
+	public boolean editarUserName(String nome) throws UpdateException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
-		for(Usuario u:usuarioRedeSocial) {
-			if(u.getUsername().equals(nome)) {
-				System.err.println("Outro usuario ja possui esse nome");
-				return false;
+		Usuario temp = null;
+		try {
+			temp = usuarioDAO.selectByUsername(nome);
+		} catch (SelectException e) {
+			e.printStackTrace();
+		}
+		if(temp == null) {
+			if(usuarioDAO.updateUsername(logadoAtual, nome)) {
+				logadoAtual.setUsername(nome);
+				return true;
 			}
 		}
-		logadoAtual.setUsername(nome);
-		return true;
+		return false;
 	}
 	
-	public boolean editarBio(String bio) {
+	public boolean editarBio(String bio) throws UpdateException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
+		usuarioDAO.updateBiografia(logadoAtual, bio);
 		logadoAtual.setBiografia(bio);
 		return true;
 	}
 	
-	public boolean editarNomeCompleto(String nome) {
+	public boolean editarNomeCompleto(String nome) throws UpdateException {
 		if(logadoAtual == null) {
 			System.err.println("Nenhum usuario logado");
 			return false;
 		}
+		usuarioDAO.updateNomeCompleto(logadoAtual, nome);
 		logadoAtual.setNomeCompleto(nome);
 		return true;
 	}
 	
-	public List<Usuario> getUsuariosTotais() {
-		return this.usuarioRedeSocial;
+	public List<Usuario> getUsuariosTotais() throws SelectException {
+		return usuarioDAO.select();
 	}
 	
 	

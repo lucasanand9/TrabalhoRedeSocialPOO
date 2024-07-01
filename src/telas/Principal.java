@@ -8,6 +8,10 @@ import javax.swing.border.EmptyBorder;
 
 import dados.Postagem;
 import dados.Usuario;
+import exception.DeleteException;
+import exception.InsertException;
+import exception.SelectException;
+import exception.UpdateException;
 import negocios.RedeSocial;
 
 import javax.swing.JTabbedPane;
@@ -16,6 +20,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.Image;
 
 import javax.swing.SwingConstants;
@@ -58,12 +63,9 @@ public class Principal extends JFrame {
 	JScrollPane scrollPane_2 = new JScrollPane();
 	
 	public Principal(RedeSocial rede) {
-		
-		
-		
 		setTitle("Rede Social");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -109,10 +111,20 @@ public class Principal extends JFrame {
 		list.setFont(new Font("Dialog", Font.BOLD, 16));
 		list.setModel(new AbstractListModel() {
 			public int getSize() {
-				return rede.getUsuariosTotais().size();
+				try {
+					return rede.getUsuariosTotais().size();
+				} catch (SelectException e) {
+					e.printStackTrace();
+				}
+				return 0;
 			}
 			public Object getElementAt(int index) {
-				return rede.getUsuariosTotais().get(index).getUsername();
+				try {
+					return rede.getUsuariosTotais().get(index).getUsername();
+				} catch (SelectException e) {
+					e.printStackTrace();
+				}
+				return null;
 			}
 		});
 		scrollPane.setViewportView(list);
@@ -120,14 +132,18 @@ public class Principal extends JFrame {
 		JButton btnNewButton_1 = new JButton("Adicionar");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!rede.addAmigo((String)list.getSelectedValue())) {
-					JOptionPane.showMessageDialog(null, "Conta nao encontrada ou ja tem esse usuario adicionado");
-				}else {
-					JOptionPane.showMessageDialog(null, "Amigo adicionado");
-					table = new JTable(new ImgTable(rede));
-					table.setRowHeight(120);
-					scrollPane_1.setViewportView(table);
-					scrollPane_2.setColumnHeaderView(listaAmigos);
+				try {
+					if(!rede.addAmigo((String)list.getSelectedValue())) {
+						JOptionPane.showMessageDialog(null, "Conta nao encontrada ou ja tem esse usuario adicionado");
+					}else {
+						JOptionPane.showMessageDialog(null, "Amigo adicionado");
+						table = new JTable(new ImgTable(rede));
+						table.setRowHeight(120);
+						scrollPane_1.setViewportView(table);
+						scrollPane_2.setColumnHeaderView(listaAmigos);
+					}
+				} catch (HeadlessException | InsertException | SelectException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
@@ -206,7 +222,11 @@ public class Principal extends JFrame {
 				if(txtAlterarNomeCompleto.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Coloque um nome valido");
 				}else {
-					rede.editarNomeCompleto(txtAlterarNomeCompleto.getText());	
+					try {
+						rede.editarNomeCompleto(txtAlterarNomeCompleto.getText());
+					} catch (UpdateException e1) {
+						e1.printStackTrace();
+					}	
 					lblNomeCompletoPage.setText("<html> <h1>" + rede.getLogado().getNomeCompleto() + "</h1> </html>");
 					JOptionPane.showMessageDialog(null, "Nome alterado!");
 				}
@@ -222,10 +242,14 @@ public class Principal extends JFrame {
 				if(txtAlterarUsername.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Coloque um nome valido");
 				}else {
-					if((rede.editarUserName(txtAlterarUsername.getText()))) {
-						JOptionPane.showMessageDialog(null, "Username alterado!");
-					}else {
-						JOptionPane.showMessageDialog(null, "Ja existe uma conta com esse Username");
+					try {
+						if((rede.editarUserName(txtAlterarUsername.getText()))) {
+							JOptionPane.showMessageDialog(null, "Username alterado!");
+						}else {
+							JOptionPane.showMessageDialog(null, "Ja existe uma conta com esse Username");
+						}
+					} catch (HeadlessException | UpdateException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -239,7 +263,11 @@ public class Principal extends JFrame {
 				if(txtAlterarSenha.getText().equals("")) {
 					JOptionPane.showMessageDialog(null, "Coloque uma senha valida");
 				}else {
-					rede.editarSenha(txtAlterarSenha.getText());
+					try {
+						rede.editarSenha(txtAlterarSenha.getText());
+					} catch (UpdateException e1) {
+						e1.printStackTrace();
+					}
 					JOptionPane.showMessageDialog(null, "Senha alterada, volte para pagina de login");
 					rede.logout();
 					Login log = new Login(rede);
@@ -308,11 +336,13 @@ public class Principal extends JFrame {
 		JButton Biografia = new JButton("✓");
 		Biografia.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rede.editarBio(txtAlterarBio.getText());
+				try {
+					rede.editarBio(txtAlterarBio.getText());
+				} catch (UpdateException e1) {
+					e1.printStackTrace();
+				}
+				lblBio.setText(rede.getBioLogado());
 				JOptionPane.showMessageDialog(null, "Biografia alterada");
-				Principal principal = new Principal(rede);
-	            principal.setVisible(true);
-	            dispose();
 			}
 		});
 		Biografia.setBounds(661, 241, 44, 33);
@@ -321,13 +351,17 @@ public class Principal extends JFrame {
 		JButton btnNewButton_2 = new JButton("Remover");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(rede.removeAmigo((String)listaAmigos.getSelectedValue())) {
-					table = new JTable(new ImgTable(rede));
-					table.setRowHeight(120);
-					scrollPane_1.setViewportView(table);
-					scrollPane_2.setColumnHeaderView(listaAmigos);
-				}else {
-					JOptionPane.showMessageDialog(null, "Erro ao remover amigo");
+				try {
+					if(rede.removeAmigo((String)listaAmigos.getSelectedValue())) {
+						table = new JTable(new ImgTable(rede));
+						table.setRowHeight(120);
+						scrollPane_1.setViewportView(table);
+						scrollPane_2.setColumnHeaderView(listaAmigos);
+					}else {
+						JOptionPane.showMessageDialog(null, "Erro ao remover amigo");
+					}
+				} catch (HeadlessException | DeleteException | SelectException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});

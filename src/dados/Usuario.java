@@ -87,9 +87,16 @@ public class Usuario {
 	public List<Usuario> getAmigos(){
 		return this.amigos;
 	}
+	public void setAmigos(List<Usuario> a) {
+		this.amigos = a;
+	}
 	
 	public List<Postagem> getPostagens(){
 		return this.postagens;
+	}
+	
+	public void setPostagens(List<Postagem> a) {
+		this.postagens = a;
 	}
 
 	

@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 
 public class AddImage extends JFrame {
+	
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -34,8 +35,9 @@ public class AddImage extends JFrame {
 	private JTextField Legenda;
 
 	public AddImage(RedeSocial rede) {
+		
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

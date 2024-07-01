@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import exception.SelectException;
 import negocios.RedeSocial;
 
 import javax.swing.JTabbedPane;
@@ -18,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.Component;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -34,9 +36,10 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login(RedeSocial rede) {
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 		setTitle("Login");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -81,12 +84,16 @@ public class Login extends JFrame {
 		JButton btnLogin = new JButton("LOGIN");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(rede.login(Username.getText(), new String(Senha.getPassword()))) {
-					Principal princ = new Principal(rede);
-					princ.setVisible(true);
-					dispose();
-				}else {
-					JOptionPane.showMessageDialog(null, "Conta nao encontrada");
+				try {
+					if(rede.login(Username.getText(), new String(Senha.getPassword()))) {
+						Principal princ = new Principal(rede);
+						princ.setVisible(true);
+						dispose();
+					}else {
+						JOptionPane.showMessageDialog(null, "Conta nao encontrada");
+					}
+				} catch (HeadlessException | SelectException e1) {
+					e1.printStackTrace();
 				}
 				
 			}
